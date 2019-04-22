@@ -11,8 +11,10 @@
   "author": "David Jensen",
   "license": "ISC",
   "dependencies": {
+    "@types/local-storage": "^1.4.0",
     "axios": "^0.18.0",
     "live-server": "^1.2.1",
+    "local-storage": "^1.4.2",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
     "react-router-dom": "^4.3.1",
