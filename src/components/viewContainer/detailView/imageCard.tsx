@@ -1,7 +1,9 @@
 import React, { Component, CSSProperties, Fragment } from 'react';
 import Spinner from '../../spinner';
 import Modal from '../../modal';
+import ls from "local-storage"
 import { ThemedCSSProperties, ThemeContext, ThemeState } from '../../../contexts/themeContext';
+
 
 export interface ImageUrls {
     full: string
@@ -17,14 +19,25 @@ interface Props {
 interface State {
     isHover: boolean
     isModalOpen: boolean
+    heart: string
 }
 
-export default class ImageCard extends Component<Props> {
+export default class ImageCard extends Component<Props, State> {
+    constructor(props:Props){
+        super(props)
+        this.state = {
+            isHover: false,
+            isModalOpen: false,
+            heart: "heart outline large icon"
+        }
 
-    state: State = {
-        isHover: false,
-        isModalOpen: false
-    }
+        this.likedImage = this.likedImage.bind(this);
+
+        if(!ls.get("likedImages")){
+            ls.set("likedImages", this.imageArray);
+        }
+}
+    private imageArray = [];
 
     style(theme: ThemeState): CSSProperties {
         const hover: CSSProperties = this.state.isHover ? {
@@ -42,8 +55,25 @@ export default class ImageCard extends Component<Props> {
     openModal = () => this.setState({ isModalOpen: true });
     closeModal = () => this.setState({ isModalOpen: false });
 
+    likedImage(event:any) {
+        const imageStorage = this.props.urls.small;
+        const getImages = ls.get("likedImages");
+        if(this.state.heart === "heart large icon"){
+
+            this.setState({ heart: "heart outline large icon"});
+            getImages.pop(imageStorage);
+
+        }else {
+            this.setState({ heart: "heart large icon" });
+            getImages.push(imageStorage);
+            
+        }
+        
+        ls.set("likedImages", getImages);
+        event.stopPropagation();
+    }
+
     render() {
-        const { urls } = this.props
         return (
             <Fragment>
                 <ThemeContext.Consumer>
@@ -54,14 +84,27 @@ export default class ImageCard extends Component<Props> {
                             onMouseLeave={this.onMouseLeave}
                             onClick={this.openModal}
                         >
-                            {urls.small ? <img src={urls.small} style={card}/> : <Spinner/>}
+                            {this.props.urls.small ? 
+                            <div style={cardContainer}> 
+                                <i 
+                                    onClick={this.likedImage} 
+                                    style={likeIcon} 
+                                    className={this.state.heart} 
+                                    >
+                                </i>
+                                <img 
+                                    src={this.props.urls.small} 
+                                    style={card}
+                                /> 
+                            </div> 
+                            : <Spinner/> }
                         </div>
                     )}
                 </ThemeContext.Consumer>
                 {
                     this.state.isModalOpen ? (
                         <Modal shouldClose={this.closeModal}>
-                            <img src={urls.regular} style={preview}/>
+                            <img src={this.props.urls.regular} style={preview}/>
                         </Modal>
                     ) : null
                 }
@@ -88,4 +131,16 @@ const preview: CSSProperties = {
     width: '100%',
     height: '100%',
     objectFit: 'contain'
+}
+const likeIcon: CSSProperties = {
+    color: 'grey',
+    position: 'absolute',
+    top: '8px',
+    right: '16px',
+    zIndex: 100
+}
+
+const cardContainer: CSSProperties = {
+    height: '100%',
+    position: 'relative'
 }
