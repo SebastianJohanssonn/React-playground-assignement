@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import { ThemedCSSProperties, ThemeContext } from '../../../contexts/themeContext';
+import { ThemedCSSProperties, ThemeContext, themes } from '../../../contexts/themeContext';
 import Button from '../../button';
 
 interface Props {
@@ -25,7 +25,7 @@ export default function HeaderSection(props: Props) {
         <ThemeContext.Consumer>
             {({ theme }) => (
                 <div style={headerSegment}>
-                    <h2 style={{ ...header(theme), ...color }}>
+                    <h2 style={{ ...inputText(theme) }}>
                         {props.view.toUpperCase()}
                     </h2>
                     <Button size="small" onClick={props.openModal}>Open Modal</Button>
@@ -43,5 +43,9 @@ const headerSegment: CSSProperties = {
 
 
 const header: ThemedCSSProperties = (theme) => ({
-    textShadow: `0px 0px 2px ${theme.background.primary}`
+    textShadow: `0px 0px 2px ${theme.background.primary}`,
+})
+
+const inputText: ThemedCSSProperties = (theme) => ({
+    color: theme.foreground.primary
 })

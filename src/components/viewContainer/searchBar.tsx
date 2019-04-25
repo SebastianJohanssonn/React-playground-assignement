@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { ThemedCSSProperties, ThemeContext } from "../../contexts/themeContext"
 import ls from 'local-storage';
 interface Props {
-
+    
 }
 interface State {
     inputValue: string
@@ -64,7 +64,6 @@ export default class SearchBar extends Component<Props, State> {
                         >
                         <Link to={this.state.inputValue} style={LinkStyling}>Search</Link>
                         </button>
-                        <p>{this.state.inputValue}</p>
                     </form>
                   
                 )}

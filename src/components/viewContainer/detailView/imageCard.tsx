@@ -15,11 +15,13 @@ export interface ImageUrls {
 
 interface Props {
     urls: ImageUrls
+    view: string
+    isLiked: boolean
+    likedClick: (urls: ImageUrls) => void
 }
 interface State {
     isHover: boolean
     isModalOpen: boolean
-    heart: string
 }
 
 export default class ImageCard extends Component<Props, State> {
@@ -27,17 +29,10 @@ export default class ImageCard extends Component<Props, State> {
         super(props)
         this.state = {
             isHover: false,
-            isModalOpen: false,
-            heart: "heart outline large icon"
+            isModalOpen: false
         }
-
-        this.likedImage = this.likedImage.bind(this);
-
-        if(!ls.get("likedImages")){
-            ls.set("likedImages", this.imageArray);
-        }
-}
-    private imageArray = [];
+        this.handleClick = this.handleClick.bind(this);
+    }
 
     style(theme: ThemeState): CSSProperties {
         const hover: CSSProperties = this.state.isHover ? {
@@ -55,22 +50,16 @@ export default class ImageCard extends Component<Props, State> {
     openModal = () => this.setState({ isModalOpen: true });
     closeModal = () => this.setState({ isModalOpen: false });
 
-    likedImage(event:any) {
-        const imageStorage = this.props.urls.small;
-        const getImages = ls.get("likedImages");
-        if(this.state.heart === "heart large icon"){
-
-            this.setState({ heart: "heart outline large icon"});
-            getImages.pop(imageStorage);
-
-        }else {
-            this.setState({ heart: "heart large icon" });
-            getImages.push(imageStorage);
-            
-        }
-        
-        ls.set("likedImages", getImages);
+    handleClick(event:any) {
         event.stopPropagation();
+        this.props.likedClick(this.props.urls)
+    }
+
+    iconStyle() {
+        if(this.props.isLiked){
+            return "large heart icon"
+        }
+        return "large outline heart icon"
     }
 
     render() {
@@ -87,9 +76,9 @@ export default class ImageCard extends Component<Props, State> {
                             {this.props.urls.small ? 
                             <div style={cardContainer}> 
                                 <i 
-                                    onClick={this.likedImage} 
+                                    onClick={this.handleClick} 
                                     style={likeIcon} 
-                                    className={this.state.heart} 
+                                    className={this.iconStyle()} 
                                     >
                                 </i>
                                 <img 

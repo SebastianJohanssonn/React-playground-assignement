@@ -9,14 +9,12 @@ const DetailView = React.lazy(() => import(/* webpackChunkName: "detailView" */ 
 /** React function component */
 export default function ViewContainer() {
 
-    const view = "";
-
     return (
         <Suspense fallback={<Spinner/>}>
             <Switch>
                 <Route exact path="/:id" component={DetailView}/>
                 <div style={centered}>
-                    <SearchBar />
+                    <SearchBar/>
                 </div>
             </Switch>
         </Suspense>
