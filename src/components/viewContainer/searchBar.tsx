@@ -15,35 +15,33 @@ export default class SearchBar extends Component<Props, State> {
         super(props)
 
         this.state = {
-            inputValue: '',
+            inputValue: ls.get("searchInput") || "",
         }
 
         this.updateInput = this.updateInput.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
+        
     }
 
-    updateInput(event) {
-        this.setState({inputValue: event.target.value})
+    updateInput(event:any) {
+        this.setState({inputValue: event.target.value});
     }
-
-    handleSubmit(event) {
-        JSON.stringify(ls.set("searchInput", this.state.inputValue))
+    
+    handleSubmit(event:any) {
+        ls.set("searchInput", this.state.inputValue);
+        const search = ls.get("searchInput");
         event.stopPropagation();
+        if (event.which === 13) {
+            this.context.router.history.push(this.state.inputValue)
+        }
+        this.setState({
+            inputValue: search
+        })
     }
 
     static contextTypes = {
         router: PropTypes.object
     }
-    
-    redirectToTarget = (event) => {
-        event.stopPropagation()
-        if (event.which === 13) {
-            this.context.router.history.push(this.state.inputValue)
-        }
-      
-
-    }
-
 
     render() {
         return (
@@ -53,9 +51,10 @@ export default class SearchBar extends Component<Props, State> {
                         <input style={ inputField(theme) } 
                         onChange={this.updateInput}
                         type="text" 
-                        placeholder="Search.." 
-                        onKeyPress={this.redirectToTarget}
+                        placeholder="Search" 
+                        onKeyPress={this.handleSubmit}
                         value={this.state.inputValue}
+                        
                         />
                         <button 
                         style={ searchButton } 
