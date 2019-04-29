@@ -123,7 +123,7 @@ const preview: CSSProperties = {
     objectFit: 'contain'
 }
 const likeIcon: CSSProperties = {
-    color: 'grey',
+    color: 'orange',
     position: 'absolute',
     top: '8px',
     right: '16px',
