@@ -8,9 +8,9 @@ interface Props {
     view: string
 }
 interface State {
-    imagesUrls: ImageUrls[],
-    isLoading: boolean,
-    likedImages: ImageUrls[],
+    imagesUrls: ImageUrls[]
+    isLoading: boolean
+    likedImages: ImageUrls[]
     isLiked: boolean
 }
   
@@ -19,18 +19,13 @@ export default class ImageSection extends Component<Props, State> {
     /** Not a good place for the key.. well.. what the heck.. - GET YOUR OWN! */
     readonly accessKey = "09e0a83167d809d6ee63ebd7c62f2f20b0ad082f9208fcffc5871c7287183b3d";
     readonly imageDatabaseApiUrl = "https://api.unsplash.com/search/photos/";
-    constructor(props:Props){
-        super(props)
-        
-        this.state = {
+
+        state: State = {
             imagesUrls: new Array(24).fill({}),
             isLoading: true,
             likedImages: [],
-            isLiked: false
+            isLiked: true 
         }
-    }
-
-    
     
     handleResponse(response: AxiosResponse) {
         if (response.data && response.data.results) {
@@ -38,24 +33,28 @@ export default class ImageSection extends Component<Props, State> {
             this.setState({ imagesUrls: images, isLoading: false })
         }
     }
-
     componentDidUpdate(){
-        
+        if(this.props.view in localStorage && this.state.likedImages.length === 0){
+            const storage: ImageUrls[] = ls.get(this.props.view);
+            if(storage.length > 0) {
+                this.setState({
+                    likedImages: this.state.likedImages = [...storage]
+                })
+            }
+        }else {
+            ls.set(this.props.view, this.state.likedImages);
+        }
     }
   
-    handleLikedImage = (urls: ImageUrls) => {
-        let storageArray: string[] = ls.get(this.props.view)
-        if(ls.get(this.props.view)){
-            storageArray.push(urls.small)
-            ls.set(this.props.view, storageArray)
-            
-        }else {
-            ls.set(this.props.view, [urls.small])
-        }
-        this.setState(prevState => ({
-            likedImages: [...prevState.likedImages, urls],
-            isLiked: true
-        }))
+    handleLikedImage = (urls: ImageUrls, index: number) => {
+        
+        this.setState({
+            likedImages: [...this.state.likedImages, urls]
+        });
+        
+        this.setState({
+            imagesUrls: this.state.imagesUrls.filter((_, i) => i !== index)
+        });
         
     }
     
@@ -81,14 +80,15 @@ export default class ImageSection extends Component<Props, State> {
             <ThemeContext.Consumer>
                 {({ theme }) => (
                     <div style={root(theme)}>
-                         {   
-                            this.state.likedImages.map((urls: ImageUrls, index:number) => 
+                        {this.state.likedImages.map((urls, index) =>
                             <ImageCard likedClick={this.handleLikedImage} 
-                            isLiked={true} view={this.props.view} key={index} urls={urls} />
+                            isLiked={true} view= {this.props.view} key={index} urls={urls} 
+                            index={index}/>
                         )}
                         {this.state.imagesUrls.map((urls, index) =>
                             <ImageCard likedClick={this.handleLikedImage} 
-                            isLiked={false} view= {this.props.view} key={index} urls={urls} />
+                            isLiked={false} view= {this.props.view} key={index} urls={urls} 
+                            index={index}/>
                         )}
                     </div>
                 )}

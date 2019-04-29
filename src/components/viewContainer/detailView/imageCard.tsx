@@ -17,7 +17,8 @@ interface Props {
     urls: ImageUrls
     view: string
     isLiked: boolean
-    likedClick: (urls: ImageUrls) => void
+    likedClick: (urls: ImageUrls, index: number) => void
+    index: number
 }
 interface State {
     isHover: boolean
@@ -50,9 +51,9 @@ export default class ImageCard extends Component<Props, State> {
     openModal = () => this.setState({ isModalOpen: true });
     closeModal = () => this.setState({ isModalOpen: false });
 
-    handleClick(event:any) {
+    handleClick(event:React.MouseEvent<HTMLElement, MouseEvent>) {
+        this.props.likedClick(this.props.urls, this.props.index)
         event.stopPropagation();
-        this.props.likedClick(this.props.urls)
     }
 
     iconStyle() {
